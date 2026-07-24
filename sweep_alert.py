@@ -23,8 +23,17 @@ invoked every 5 minutes by a scheduler, e.g. GitHub Actions).
 import os
 import json
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import requests
+
+IST = timezone(timedelta(hours=5, minutes=30))
+
+
+def to_ist(utc_time_str):
+    """Convert a 'YYYY-MM-DD HH:MM:SS' UTC string (as returned by Twelve Data)
+    to a display string in IST."""
+    dt = datetime.strptime(utc_time_str, "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
+    return dt.astimezone(IST).strftime("%Y-%m-%d %H:%M:%S IST")
 
 TWELVEDATA_API_KEY = os.environ["TWELVEDATA_API_KEY"]
 TELEGRAM_BOT_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
@@ -133,7 +142,7 @@ def process_pair(display_name, td_symbol, state):
         ps["1h_high"] = last_closed_1h["high"]
         ps["1h_low"] = last_closed_1h["low"]
         ps["sweep"] = None
-        print(f"{display_name}: new 1H level set high={ps['1h_high']} low={ps['1h_low']}")
+        print(f"{display_name}: new 1H level set high={ps['1h_high']} low={ps['1h_low']} ({to_ist(ps['1h_time'])})")
 
     # --- 5min data ---
     m5 = td_get([td_symbol], "5min", 10)[td_symbol]
@@ -182,9 +191,9 @@ def process_pair(display_name, td_symbol, state):
             if confirmed:
                 msg = (
                     f"<b>{display_name} - {setup} setup confirmed</b>\n"
-                    f"1H level swept: {sweep['direction']} ({sweep['sweep_time']} UTC)\n"
+                    f"1H level swept: {sweep['direction']} ({to_ist(sweep['sweep_time'])})\n"
                     f"Sweep candle range: {sweep['sweep_low']} - {sweep['sweep_high']}\n"
-                    f"Confirmation candle close: {candle['close']} at {candle['time']} UTC\n"
+                    f"Confirmation candle close: {candle['close']} at {to_ist(candle['time'])}\n"
                     f"Watch for entry on mitigation of the sweep candle."
                 )
                 send_telegram(msg)
