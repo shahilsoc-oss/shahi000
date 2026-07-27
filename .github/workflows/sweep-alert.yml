@@ -3,6 +3,8 @@ name: Sweep alert
 on:
   schedule:
     - cron: "*/5 * * * *"
+  repository_dispatch:
+    types: [sweep-check]
   workflow_dispatch: {}
 
 permissions:
