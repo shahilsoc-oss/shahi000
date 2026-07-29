@@ -122,14 +122,29 @@ def default_pair_state():
     }
 
 
+def closed_candles(candles, interval_minutes):
+    """Return only candles that have actually finished, determined by
+    elapsed wall-clock time rather than assuming the API's array position
+    (some providers include the still-forming candle as the last item,
+    some don't -- we don't want to depend on that)."""
+    now = datetime.now(timezone.utc)
+    out = []
+    for c in candles:
+        open_time = datetime.strptime(c["time"], "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
+        if open_time + timedelta(minutes=interval_minutes) <= now:
+            out.append(c)
+    return out
+
+
 def process_pair(display_name, td_symbol, state):
     ps = state.setdefault(display_name, default_pair_state())
 
     # --- 1H data: only need the last couple of closed candles ---
-    h1 = td_get([td_symbol], "1h", 3)[td_symbol]
-    if len(h1) < 2:
+    h1_raw = td_get([td_symbol], "1h", 3)[td_symbol]
+    h1 = closed_candles(h1_raw, 60)
+    if not h1:
         return
-    last_closed_1h = h1[-2]  # most recent fully closed 1H candle (last item may be forming)
+    last_closed_1h = h1[-1]  # most recent FULLY closed 1H candle (verified by elapsed time)
 
     if ps["1h_time"] != last_closed_1h["time"]:
         # New 1H candle closed -> reset level and re-arm both alert flags
@@ -141,10 +156,8 @@ def process_pair(display_name, td_symbol, state):
         print(f"{display_name}: new 1H level set high={ps['1h_high']} low={ps['1h_low']} ({to_ist(ps['1h_time'])})")
 
     # --- 5min data ---
-    m5 = td_get([td_symbol], "5min", 10)[td_symbol]
-    if len(m5) < 2:
-        return
-    closed_5m = m5[:-1]  # drop the still-forming candle
+    m5_raw = td_get([td_symbol], "5min", 10)[td_symbol]
+    closed_5m = closed_candles(m5_raw, 5)  # verified fully closed 5min candles only
 
     for candle in closed_5m:
         if ps["last_5m_time"] and candle["time"] <= ps["last_5m_time"]:
