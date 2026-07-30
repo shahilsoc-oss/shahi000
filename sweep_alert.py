@@ -187,7 +187,19 @@ def process_pair(display_name, td_symbol, state):
             print(f"{display_name}: LOW swept at {candle['time']}")
 
 
+def in_quiet_hours():
+    """True if it's currently between 10 PM and 6 AM IST -- no polling,
+    no API calls, no alerts during this window."""
+    now_ist = datetime.now(timezone.utc).astimezone(IST)
+    hour = now_ist.hour
+    return hour >= 22 or hour < 6
+
+
 def main():
+    if in_quiet_hours():
+        print("Quiet hours (10 PM - 6 AM IST) -- skipping this run, no API calls made.")
+        return
+
     state = load_state()
     for display_name, td_symbol in PAIRS.items():
         try:
