@@ -1,29 +1,29 @@
 {
   "XAUUSD": {
-    "1h_time": "2026-07-31 10:00:00",
-    "1h_high": 4057.94749,
-    "1h_low": 4052.6849,
-    "last_5m_time": "2026-07-31 11:25:00",
+    "1h_time": "2026-07-31 23:00:00",
+    "1h_high": 4042.87261,
+    "1h_low": 4042.62234,
+    "last_5m_time": "2026-08-01 00:25:00",
     "sweep": null,
     "high_alerted": true,
-    "low_alerted": true
+    "low_alerted": false
   },
   "EURUSD": {
-    "1h_time": "2026-07-31 10:00:00",
-    "1h_high": 1.15083,
-    "1h_low": 1.15014,
-    "last_5m_time": "2026-07-31 11:20:00",
+    "1h_time": "2026-07-31 23:00:00",
+    "1h_high": 1.15386,
+    "1h_low": 1.15287,
+    "last_5m_time": "2026-08-01 00:25:00",
     "sweep": null,
     "high_alerted": false,
     "low_alerted": true
   },
   "GBPUSD": {
-    "1h_time": "2026-07-31 10:00:00",
-    "1h_high": 1.34513,
-    "1h_low": 1.34438,
-    "last_5m_time": "2026-07-31 11:20:00",
+    "1h_time": "2026-07-31 23:00:00",
+    "1h_high": 1.34841,
+    "1h_low": 1.34628,
+    "last_5m_time": "2026-08-01 00:25:00",
     "sweep": null,
-    "high_alerted": false,
-    "low_alerted": true
+    "high_alerted": true,
+    "low_alerted": false
   }
 }
