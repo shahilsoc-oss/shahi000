@@ -136,24 +136,24 @@ def closed_candles(candles, interval_minutes):
     return out
 
 
-def process_pair(display_name, td_symbol, state):
+def process_pair(display_name, td_symbol, h1_data, state):
     ps = state.setdefault(display_name, default_pair_state())
 
-    # --- 1H data: only need the last couple of closed candles ---
-    h1_raw = td_get([td_symbol], "1h", 3)[td_symbol]
-    h1 = closed_candles(h1_raw, 60)
-    if not h1:
-        return
-    last_closed_1h = h1[-1]  # most recent FULLY closed 1H candle (verified by elapsed time)
+    if h1_data is not None:
+        h1 = closed_candles(h1_data, 60)
+        if h1:
+            last_closed_1h = h1[-1]  # most recent FULLY closed 1H candle
+            if ps["1h_time"] != last_closed_1h["time"]:
+                # New 1H candle closed -> reset level and re-arm both alert flags
+                ps["1h_time"] = last_closed_1h["time"]
+                ps["1h_high"] = last_closed_1h["high"]
+                ps["1h_low"] = last_closed_1h["low"]
+                ps["high_alerted"] = False
+                ps["low_alerted"] = False
+                print(f"{display_name}: new 1H level set high={ps['1h_high']} low={ps['1h_low']} ({to_ist(ps['1h_time'])})")
 
-    if ps["1h_time"] != last_closed_1h["time"]:
-        # New 1H candle closed -> reset level and re-arm both alert flags
-        ps["1h_time"] = last_closed_1h["time"]
-        ps["1h_high"] = last_closed_1h["high"]
-        ps["1h_low"] = last_closed_1h["low"]
-        ps["high_alerted"] = False
-        ps["low_alerted"] = False
-        print(f"{display_name}: new 1H level set high={ps['1h_high']} low={ps['1h_low']} ({to_ist(ps['1h_time'])})")
+    if ps["1h_high"] is None or ps["1h_low"] is None:
+        return  # no level established yet, nothing to check against
 
     # --- 5min data ---
     m5_raw = td_get([td_symbol], "5min", 10)[td_symbol]
@@ -201,9 +201,26 @@ def main():
         return
 
     state = load_state()
+
+    now_hour_key = datetime.now(timezone.utc).strftime("%Y-%m-%d %H")
+    fetch_1h = state.get("_last_1h_fetch_hour") != now_hour_key
+
+    h1_by_pair = {}
+    if fetch_1h:
+        td_symbols = list(PAIRS.values())
+        h1_batch = td_get(td_symbols, "1h", 3)
+        for display_name, td_symbol in PAIRS.items():
+            h1_by_pair[display_name] = h1_batch[td_symbol]
+        state["_last_1h_fetch_hour"] = now_hour_key
+        print(f"Fetched 1H data (hourly refresh, key={now_hour_key})")
+    else:
+        for display_name in PAIRS:
+            h1_by_pair[display_name] = None
+        print(f"Skipping 1H fetch this run (already fetched for hour {now_hour_key}) -- saving API credits")
+
     for display_name, td_symbol in PAIRS.items():
         try:
-            process_pair(display_name, td_symbol, state)
+            process_pair(display_name, td_symbol, h1_by_pair[display_name], state)
         except Exception as e:
             print(f"ERROR processing {display_name}: {e}", file=sys.stderr)
     save_state(state)
