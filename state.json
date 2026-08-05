@@ -3,25 +3,25 @@
     "1h_time": "2026-08-05 06:00:00",
     "1h_high": 4178.02668,
     "1h_low": 4160.59913,
-    "last_5m_time": "2026-08-05 06:55:00",
+    "last_5m_time": "2026-08-05 07:00:00",
     "sweep": null,
-    "high_alerted": false,
+    "high_alerted": true,
     "low_alerted": false
   },
   "EURUSD": {
     "1h_time": "2026-08-05 06:00:00",
     "1h_high": 1.15458,
     "1h_low": 1.15327,
-    "last_5m_time": "2026-08-05 06:55:00",
+    "last_5m_time": "2026-08-05 07:00:00",
     "sweep": null,
-    "high_alerted": false,
+    "high_alerted": true,
     "low_alerted": false
   },
   "GBPUSD": {
     "1h_time": "2026-08-05 06:00:00",
     "1h_high": 1.34677,
     "1h_low": 1.34519,
-    "last_5m_time": "2026-08-05 06:55:00",
+    "last_5m_time": "2026-08-05 07:00:00",
     "sweep": null,
     "high_alerted": true,
     "low_alerted": false
