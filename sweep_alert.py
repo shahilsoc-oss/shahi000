@@ -136,28 +136,44 @@ def closed_candles(candles, interval_minutes):
     return out
 
 
-def process_pair(display_name, td_symbol, h1_data, state):
+def hour_bucket(dt):
+    return dt.replace(minute=0, second=0, microsecond=0)
+
+
+def process_pair(display_name, td_symbol, state):
     ps = state.setdefault(display_name, default_pair_state())
 
-    if h1_data is not None:
-        h1 = closed_candles(h1_data, 60)
-        if h1:
-            last_closed_1h = h1[-1]  # most recent FULLY closed 1H candle
-            if ps["1h_time"] != last_closed_1h["time"]:
-                # New 1H candle closed -> reset level and re-arm both alert flags
-                ps["1h_time"] = last_closed_1h["time"]
-                ps["1h_high"] = last_closed_1h["high"]
-                ps["1h_low"] = last_closed_1h["low"]
-                ps["high_alerted"] = False
-                ps["low_alerted"] = False
-                print(f"{display_name}: new 1H level set high={ps['1h_high']} low={ps['1h_low']} ({to_ist(ps['1h_time'])})")
+    # Fetch enough 5min history to cover the last full hour plus the
+    # currently-forming one (20 candles = ~100 minutes of buffer).
+    m5_raw = td_get([td_symbol], "5min", 20)[td_symbol]
+    closed_5m = closed_candles(m5_raw, 5)  # verified fully closed 5min candles only
+    if not closed_5m:
+        return
+
+    now = datetime.now(timezone.utc)
+
+    # --- Derive the 1H high/low ourselves from 5min candles, wall-clock aligned ---
+    buckets = {}
+    for c in closed_5m:
+        open_time = datetime.strptime(c["time"], "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
+        b = hour_bucket(open_time)
+        buckets.setdefault(b, []).append(c)
+
+    complete_buckets = [b for b in buckets if now >= b + timedelta(hours=1)]
+    if complete_buckets:
+        latest_bucket = max(complete_buckets)
+        bucket_key = latest_bucket.strftime("%Y-%m-%d %H:%M:%S")
+        if ps["1h_time"] != bucket_key:
+            candles_in_hour = buckets[latest_bucket]
+            ps["1h_time"] = bucket_key
+            ps["1h_high"] = max(c["high"] for c in candles_in_hour)
+            ps["1h_low"] = min(c["low"] for c in candles_in_hour)
+            ps["high_alerted"] = False
+            ps["low_alerted"] = False
+            print(f"{display_name}: new 1H level set high={ps['1h_high']} low={ps['1h_low']} ({to_ist(bucket_key)}, from {len(candles_in_hour)} 5min candles)")
 
     if ps["1h_high"] is None or ps["1h_low"] is None:
         return  # no level established yet, nothing to check against
-
-    # --- 5min data ---
-    m5_raw = td_get([td_symbol], "5min", 10)[td_symbol]
-    closed_5m = closed_candles(m5_raw, 5)  # verified fully closed 5min candles only
 
     for candle in closed_5m:
         if ps["last_5m_time"] and candle["time"] <= ps["last_5m_time"]:
@@ -202,25 +218,9 @@ def main():
 
     state = load_state()
 
-    now_hour_key = datetime.now(timezone.utc).strftime("%Y-%m-%d %H")
-    fetch_1h = state.get("_last_1h_fetch_hour") != now_hour_key
-
-    h1_by_pair = {}
-    if fetch_1h:
-        td_symbols = list(PAIRS.values())
-        h1_batch = td_get(td_symbols, "1h", 3)
-        for display_name, td_symbol in PAIRS.items():
-            h1_by_pair[display_name] = h1_batch[td_symbol]
-        state["_last_1h_fetch_hour"] = now_hour_key
-        print(f"Fetched 1H data (hourly refresh, key={now_hour_key})")
-    else:
-        for display_name in PAIRS:
-            h1_by_pair[display_name] = None
-        print(f"Skipping 1H fetch this run (already fetched for hour {now_hour_key}) -- saving API credits")
-
     for display_name, td_symbol in PAIRS.items():
         try:
-            process_pair(display_name, td_symbol, h1_by_pair[display_name], state)
+            process_pair(display_name, td_symbol, state)
         except Exception as e:
             print(f"ERROR processing {display_name}: {e}", file=sys.stderr)
     save_state(state)
