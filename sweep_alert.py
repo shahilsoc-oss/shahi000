@@ -2,7 +2,10 @@
 1H high/low sweep alert bot.
 
 Strategy (simplified):
-  1. Track the high/low of the current (most recently CLOSED) 1H candle per pair.
+  1. Track the high/low of the current (most recently CLOSED) 1H candle per pair,
+     computed ourselves from 5min candles (wall-clock aligned to :00-:55),
+     rather than trusting a data provider's separate 1h endpoint (which can
+     timestamp hourly bars off calendar-hour boundaries).
   2. Watch 5min candles. The moment a 5min candle's wick OR body touches or
      crosses the 1H high or low, fire a Telegram alert. It does not matter
      whether the candle closes back inside the range or beyond it.
@@ -40,6 +43,13 @@ PAIRS = {
     "EURUSD": "EUR/USD",
     "GBPUSD": "GBP/USD",
 }
+
+# 30 candles x 5min = 150 minutes of history. This must comfortably exceed
+# the max possible distance back to the start of the previous fully-closed
+# hour (worst case ~115 minutes), so that hour's bucket is never missing
+# candles due to the fetch window being too short.
+FIVE_MIN_OUTPUTSIZE = 30
+MIN_CANDLES_FOR_TRUSTED_HOUR = 10  # allow for minor provider data gaps
 
 STATE_FILE = os.path.join(os.path.dirname(__file__), "state.json")
 TD_BASE = "https://api.twelvedata.com/time_series"
@@ -124,9 +134,7 @@ def default_pair_state():
 
 def closed_candles(candles, interval_minutes):
     """Return only candles that have actually finished, determined by
-    elapsed wall-clock time rather than assuming the API's array position
-    (some providers include the still-forming candle as the last item,
-    some don't -- we don't want to depend on that)."""
+    elapsed wall-clock time rather than assuming the API's array position."""
     now = datetime.now(timezone.utc)
     out = []
     for c in candles:
@@ -143,10 +151,8 @@ def hour_bucket(dt):
 def process_pair(display_name, td_symbol, state):
     ps = state.setdefault(display_name, default_pair_state())
 
-    # Fetch enough 5min history to cover the last full hour plus the
-    # currently-forming one (20 candles = ~100 minutes of buffer).
-    m5_raw = td_get([td_symbol], "5min", 20)[td_symbol]
-    closed_5m = closed_candles(m5_raw, 5)  # verified fully closed 5min candles only
+    m5_raw = td_get([td_symbol], "5min", FIVE_MIN_OUTPUTSIZE)[td_symbol]
+    closed_5m = closed_candles(m5_raw, 5)
     if not closed_5m:
         return
 
@@ -159,7 +165,10 @@ def process_pair(display_name, td_symbol, state):
         b = hour_bucket(open_time)
         buckets.setdefault(b, []).append(c)
 
-    complete_buckets = [b for b in buckets if now >= b + timedelta(hours=1)]
+    complete_buckets = [
+        b for b in buckets
+        if now >= b + timedelta(hours=1) and len(buckets[b]) >= MIN_CANDLES_FOR_TRUSTED_HOUR
+    ]
     if complete_buckets:
         latest_bucket = max(complete_buckets)
         bucket_key = latest_bucket.strftime("%Y-%m-%d %H:%M:%S")
@@ -173,7 +182,7 @@ def process_pair(display_name, td_symbol, state):
             print(f"{display_name}: new 1H level set high={ps['1h_high']} low={ps['1h_low']} ({to_ist(bucket_key)}, from {len(candles_in_hour)} 5min candles)")
 
     if ps["1h_high"] is None or ps["1h_low"] is None:
-        return  # no level established yet, nothing to check against
+        return  # no trustworthy level established yet, nothing to check against
 
     for candle in closed_5m:
         if ps["last_5m_time"] and candle["time"] <= ps["last_5m_time"]:
