@@ -3,7 +3,7 @@
     "1h_time": "2026-08-06 02:00:00",
     "1h_high": 4304.07478,
     "1h_low": 4274.9658,
-    "last_5m_time": "2026-08-06 02:55:00",
+    "last_5m_time": "2026-08-06 03:00:00",
     "sweep": null,
     "high_alerted": false,
     "low_alerted": false
@@ -12,7 +12,7 @@
     "1h_time": "2026-08-06 02:00:00",
     "1h_high": 1.15584,
     "1h_low": 1.15524,
-    "last_5m_time": "2026-08-06 02:55:00",
+    "last_5m_time": "2026-08-06 03:00:00",
     "sweep": null,
     "high_alerted": false,
     "low_alerted": true
@@ -21,7 +21,7 @@
     "1h_time": "2026-08-06 02:00:00",
     "1h_high": 1.34731,
     "1h_low": 1.34675,
-    "last_5m_time": "2026-08-06 02:55:00",
+    "last_5m_time": "2026-08-06 03:00:00",
     "sweep": null,
     "high_alerted": false,
     "low_alerted": true
