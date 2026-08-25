@@ -18,13 +18,13 @@
     "low_alerted": true
   },
   "GBPUSD": {
-    "1h_time": "2026-08-25 10:00:00",
-    "1h_high": 1.36448,
-    "1h_low": 1.36316,
-    "last_5m_time": "2026-08-25 11:50:00",
+    "1h_time": "2026-08-25 11:00:00",
+    "1h_high": 1.36375,
+    "1h_low": 1.36272,
+    "last_5m_time": "2026-08-25 11:55:00",
     "sweep": null,
     "high_alerted": false,
-    "low_alerted": true
+    "low_alerted": false
   },
   "_last_1h_fetch_hour": "2026-08-06 06"
 }
