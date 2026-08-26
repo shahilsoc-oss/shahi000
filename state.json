@@ -1,9 +1,9 @@
 {
   "XAUUSD": {
-    "1h_time": "2026-08-26 02:00:00",
-    "1h_high": 4670.06024,
-    "1h_low": 4654.95564,
-    "last_5m_time": "2026-08-26 03:50:00",
+    "1h_time": "2026-08-26 03:00:00",
+    "1h_high": 4660.09021,
+    "1h_low": 4643.60344,
+    "last_5m_time": "2026-08-26 04:00:00",
     "sweep": null,
     "high_alerted": false,
     "low_alerted": true
@@ -12,7 +12,7 @@
     "1h_time": "2026-08-26 03:00:00",
     "1h_high": 1.16688,
     "1h_low": 1.16636,
-    "last_5m_time": "2026-08-26 03:55:00",
+    "last_5m_time": "2026-08-26 04:00:00",
     "sweep": null,
     "high_alerted": false,
     "low_alerted": false
@@ -21,10 +21,10 @@
     "1h_time": "2026-08-26 03:00:00",
     "1h_high": 1.36419,
     "1h_low": 1.36364,
-    "last_5m_time": "2026-08-26 03:55:00",
+    "last_5m_time": "2026-08-26 04:00:00",
     "sweep": null,
     "high_alerted": false,
-    "low_alerted": false
+    "low_alerted": true
   },
   "_last_1h_fetch_hour": "2026-08-06 06"
 }
