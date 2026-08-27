@@ -40,8 +40,6 @@ TELEGRAM_CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
 # Twelve Data symbol format
 PAIRS = {
     "XAUUSD": "XAU/USD",
-    "EURUSD": "EUR/USD",
-    "GBPUSD": "GBP/USD",
 }
 
 # 30 candles x 5min = 150 minutes of history. This must comfortably exceed
