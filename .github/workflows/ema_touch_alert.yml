@@ -1,7 +1,7 @@
 name: EMA Touch Alert
 on:
   schedule:
-    - cron: '*/2 * * * *'
+    - cron: '1,16,31,46 * * * *'
   workflow_dispatch:
 
 jobs:
