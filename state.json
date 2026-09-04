@@ -1,12 +1,12 @@
 {
   "XAUUSD": {
-    "1h_time": "2026-09-04 12:00:00",
-    "1h_high": 4514.11331,
-    "1h_low": 4377.25288,
-    "last_5m_time": "2026-09-04 13:50:00",
+    "1h_time": "2026-09-04 13:00:00",
+    "1h_high": 4433.54988,
+    "1h_low": 4368.52912,
+    "last_5m_time": "2026-09-04 13:55:00",
     "sweep": null,
     "high_alerted": false,
-    "low_alerted": true
+    "low_alerted": false
   },
   "EURUSD": {
     "1h_time": "2026-08-27 00:00:00",
