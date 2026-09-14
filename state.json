@@ -3,10 +3,10 @@
     "1h_time": "2026-09-14 03:00:00",
     "1h_high": 4336.51344,
     "1h_low": 4327.08502,
-    "last_5m_time": "2026-09-14 04:30:00",
+    "last_5m_time": "2026-09-14 04:35:00",
     "sweep": null,
     "high_alerted": false,
-    "low_alerted": false
+    "low_alerted": true
   },
   "EURUSD": {
     "1h_time": "2026-08-27 00:00:00",
