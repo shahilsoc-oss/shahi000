@@ -3,10 +3,40 @@
     "1h_time": "2026-09-23 04:00:00",
     "1h_high": 4347.63706,
     "1h_low": 4343.10532,
-    "last_5m_time": "2026-09-23 05:10:00",
+    "last_5m_time": "2026-09-23 05:15:00",
     "sweep": null,
     "high_alerted": false,
-    "low_alerted": true
+    "low_alerted": true,
+    "hours": [
+      {
+        "time": "2026-09-23 01:00:00",
+        "high": 4358.37032,
+        "low": 4339.90105,
+        "high_alerted": false,
+        "low_alerted": false
+      },
+      {
+        "time": "2026-09-23 02:00:00",
+        "high": 4342.01916,
+        "low": 4333.50667,
+        "high_alerted": true,
+        "low_alerted": false
+      },
+      {
+        "time": "2026-09-23 03:00:00",
+        "high": 4345.13585,
+        "low": 4334.07013,
+        "high_alerted": false,
+        "low_alerted": false
+      },
+      {
+        "time": "2026-09-23 04:00:00",
+        "high": 4347.63706,
+        "low": 4343.10532,
+        "high_alerted": false,
+        "low_alerted": true
+      }
+    ]
   },
   "EURUSD": {
     "1h_time": "2026-08-27 00:00:00",
@@ -26,5 +56,9 @@
     "high_alerted": false,
     "low_alerted": true
   },
-  "_last_1h_fetch_hour": "2026-08-06 06"
+  "_last_1h_fetch_hour": "2026-08-06 06",
+  "NAS100": {
+    "hours": [],
+    "last_5m_time": null
+  }
 }
