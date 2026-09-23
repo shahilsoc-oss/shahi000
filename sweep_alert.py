@@ -47,7 +47,7 @@ TELEGRAM_CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
 # Twelve Data symbol format
 PAIRS = {
     "XAUUSD": "XAU/USD",
-    "NAS100": "NDX",
+    "NAS100": "QQQ",
 }
 
 MAX_HOURS_TRACKED = 4  # how many recent 1H candles to keep watching (set to 3 if you prefer)
