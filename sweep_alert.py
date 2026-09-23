@@ -50,7 +50,7 @@ PAIRS = {
     "NAS100": "QQQ",
 }
 
-MAX_HOURS_TRACKED = 4  # how many recent 1H candles to keep watching (set to 3 if you prefer)
+MAX_HOURS_TRACKED = 3  # how many recent 1H candles to keep watching (set to 3 if you prefer)
 MIN_CANDLES_FOR_TRUSTED_HOUR = 10  # allow for minor provider data gaps
 # Buffer big enough to always contain MAX_HOURS_TRACKED full hours regardless
 # of where in the current hour the script happens to run.
