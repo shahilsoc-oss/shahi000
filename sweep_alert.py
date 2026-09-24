@@ -46,7 +46,6 @@ TELEGRAM_CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
 
 # Twelve Data symbol format
 PAIRS = {
-    "XAUUSD": "XAU/USD",
     "NAS100": "QQQ",
 }
 
