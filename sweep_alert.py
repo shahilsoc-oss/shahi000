@@ -43,13 +43,26 @@ def hour_range_ist(utc_time_str):
 TWELVEDATA_API_KEY = os.environ["TWELVEDATA_API_KEY"]
 TELEGRAM_BOT_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
 TELEGRAM_CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
+OANDA_API_TOKEN = os.environ.get("OANDA_API_TOKEN")  # only required for OANDA-sourced pairs
+OANDA_ENV = os.environ.get("OANDA_ENV", "practice")  # "practice" (demo, free) or "live"
+OANDA_BASE = (
+    "https://api-fxpractice.oanda.com/v3" if OANDA_ENV == "practice" else "https://api-fxtrade.oanda.com/v3"
+)
 
-# Twelve Data symbol format
-PAIRS = {
-    "NAS100": "QQQ",
+# Which data source each pair comes from
+DATA_SOURCE = {
+    "XAUUSD": "twelvedata",
+    "NAS100": "oanda",
 }
 
-MAX_HOURS_TRACKED = 3  # how many recent 1H candles to keep watching (set to 3 if you prefer)
+# Symbol format per source: Twelve Data format for twelvedata pairs,
+# OANDA instrument name for oanda pairs.
+PAIRS = {
+    "XAUUSD": "XAU/USD",
+    "NAS100": "NAS100_USD",
+}
+
+MAX_HOURS_TRACKED = 4  # how many recent 1H candles to keep watching (set to 3 if you prefer)
 MIN_CANDLES_FOR_TRUSTED_HOUR = 10  # allow for minor provider data gaps
 # Buffer big enough to always contain MAX_HOURS_TRACKED full hours regardless
 # of where in the current hour the script happens to run.
@@ -96,6 +109,42 @@ def td_get(symbols, interval, outputsize):
                 }
             )
         out[sym] = candles
+    return out
+
+
+def oanda_get_5min_candles(instrument, count):
+    """Fetch closed 5min candles from OANDA's v20 API, normalized to the
+    same {time, open, high, low, close} shape used for Twelve Data."""
+    if not OANDA_API_TOKEN:
+        print("WARNING: OANDA_API_TOKEN not set, skipping OANDA-sourced pair", file=sys.stderr)
+        return []
+    resp = requests.get(
+        f"{OANDA_BASE}/instruments/{instrument}/candles",
+        headers={"Authorization": f"Bearer {OANDA_API_TOKEN}"},
+        params={"granularity": "M5", "count": count, "price": "M"},
+        timeout=20,
+    )
+    data = resp.json()
+    raw_candles = data.get("candles")
+    if not raw_candles:
+        print(f"WARNING: no OANDA data for {instrument}: {data}", file=sys.stderr)
+        return []
+
+    out = []
+    for c in raw_candles:
+        if not c.get("complete"):
+            continue  # OANDA tells us directly whether the candle has closed
+        t = c["time"].split(".")[0]  # e.g. "2026-07-31T14:00:00.000000000Z" -> "2026-07-31T14:00:00"
+        dt = datetime.strptime(t, "%Y-%m-%dT%H:%M:%S")
+        out.append(
+            {
+                "time": dt.strftime("%Y-%m-%d %H:%M:%S"),
+                "open": float(c["mid"]["o"]),
+                "high": float(c["mid"]["h"]),
+                "low": float(c["mid"]["l"]),
+                "close": float(c["mid"]["c"]),
+            }
+        )
     return out
 
 
@@ -148,8 +197,11 @@ def process_pair(display_name, td_symbol, state):
     ps.setdefault("hours", [])
     ps.setdefault("last_5m_time", None)
 
-    m5_raw = td_get([td_symbol], "5min", FIVE_MIN_OUTPUTSIZE)[td_symbol]
-    closed_5m = closed_candles(m5_raw, 5)
+    if DATA_SOURCE.get(display_name) == "oanda":
+        closed_5m = oanda_get_5min_candles(td_symbol, FIVE_MIN_OUTPUTSIZE)
+    else:
+        m5_raw = td_get([td_symbol], "5min", FIVE_MIN_OUTPUTSIZE)[td_symbol]
+        closed_5m = closed_candles(m5_raw, 5)
     if not closed_5m:
         return
 
