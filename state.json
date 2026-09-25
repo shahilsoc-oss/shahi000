@@ -3,7 +3,7 @@
     "1h_time": "2026-09-23 04:00:00",
     "1h_high": 4347.63706,
     "1h_low": 4343.10532,
-    "last_5m_time": "2026-09-25 06:45:00",
+    "last_5m_time": "2026-09-25 06:50:00",
     "sweep": null,
     "high_alerted": false,
     "low_alerted": true,
@@ -88,6 +88,6 @@
         "low_alerted": false
       }
     ],
-    "last_5m_time": "2026-09-25 06:45:00"
+    "last_5m_time": "2026-09-25 06:50:00"
   }
 }
