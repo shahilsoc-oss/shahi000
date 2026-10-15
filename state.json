@@ -3,18 +3,11 @@
     "1h_time": "2026-09-23 04:00:00",
     "1h_high": 4347.63706,
     "1h_low": 4343.10532,
-    "last_5m_time": "2026-10-15 10:50:00",
+    "last_5m_time": "2026-10-15 10:55:00",
     "sweep": null,
     "high_alerted": false,
     "low_alerted": true,
     "hours": [
-      {
-        "time": "2026-10-15 06:00:00",
-        "high": 4139.51143,
-        "low": 4131.92959,
-        "high_alerted": true,
-        "low_alerted": false
-      },
       {
         "time": "2026-10-15 07:00:00",
         "high": 4145.66183,
@@ -33,6 +26,13 @@
         "time": "2026-10-15 09:00:00",
         "high": 4160.36232,
         "low": 4151.10004,
+        "high_alerted": false,
+        "low_alerted": false
+      },
+      {
+        "time": "2026-10-15 10:00:00",
+        "high": 4158.86879,
+        "low": 4152.1342,
         "high_alerted": false,
         "low_alerted": false
       }
@@ -60,13 +60,6 @@
   "NAS100": {
     "hours": [
       {
-        "time": "2026-10-15 06:00:00",
-        "high": 29758.8,
-        "low": 29582.8,
-        "high_alerted": false,
-        "low_alerted": true
-      },
-      {
         "time": "2026-10-15 07:00:00",
         "high": 29686.9,
         "low": 29571.8,
@@ -86,8 +79,15 @@
         "low": 29645.3,
         "high_alerted": false,
         "low_alerted": true
+      },
+      {
+        "time": "2026-10-15 10:00:00",
+        "high": 29684.6,
+        "low": 29605.6,
+        "high_alerted": false,
+        "low_alerted": false
       }
     ],
-    "last_5m_time": "2026-10-15 10:50:00"
+    "last_5m_time": "2026-10-15 10:55:00"
   }
 }
