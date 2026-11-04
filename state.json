@@ -84,10 +84,10 @@
         "time": "2026-11-04 06:00:00",
         "high": 28132.1,
         "low": 28024.6,
-        "high_alerted": false,
+        "high_alerted": true,
         "low_alerted": false
       }
     ],
-    "last_5m_time": "2026-11-04 07:00:00"
+    "last_5m_time": "2026-11-04 07:05:00"
   }
 }
