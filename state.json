@@ -3,7 +3,7 @@
     "1h_time": "2026-09-23 04:00:00",
     "1h_high": 4347.63706,
     "1h_low": 4343.10532,
-    "last_5m_time": "2026-11-18 05:55:00",
+    "last_5m_time": "2026-11-18 06:00:00",
     "sweep": null,
     "high_alerted": false,
     "low_alerted": true,
@@ -60,13 +60,6 @@
   "NAS100": {
     "hours": [
       {
-        "time": "2026-11-18 01:00:00",
-        "high": 27401.6,
-        "low": 27089.2,
-        "high_alerted": false,
-        "low_alerted": true
-      },
-      {
         "time": "2026-11-18 02:00:00",
         "high": 27215.5,
         "low": 27044.1,
@@ -86,8 +79,15 @@
         "low": 27112.7,
         "high_alerted": false,
         "low_alerted": true
+      },
+      {
+        "time": "2026-11-18 05:00:00",
+        "high": 27219.2,
+        "low": 27098.4,
+        "high_alerted": false,
+        "low_alerted": false
       }
     ],
-    "last_5m_time": "2026-11-18 05:50:00"
+    "last_5m_time": "2026-11-18 06:00:00"
   }
 }
